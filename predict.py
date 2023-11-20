@@ -6,6 +6,7 @@
 from __future__ import unicode_literals
 import zipfile
 from cog import BasePredictor, Input, Path as CogPath
+from pathlib import Path
 import yt_dlp
 import os
 import shutil
@@ -275,11 +276,21 @@ class Predictor(BasePredictor):
                 f"dataset/{AUDIO_NAME}/split_{i}.wav", chunk, sr
             )  # Save sliced audio files with soundfile.
 
+        # Correct the output ZIP file path
+        output_zip_path = f"dataset_{AUDIO_NAME}.zip"
+
         # Zip the contents of the directory and return the CogPath of the zip file
-        with zipfile.ZipFile(
-            f"dataset_{AUDIO_NAME}.zip", "w", zipfile.ZIP_DEFLATED
-        ) as zipf:
-            for root, dirs, files in os.walk(f"dataset/{AUDIO_NAME}"):
+        with zipfile.ZipFile(output_zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            base_path = Path(f"dataset/{AUDIO_NAME}")
+            for root, dirs, files in os.walk(base_path):
                 for file in files:
-                    zipf.write(os.path.join(root, file))
-        return CogPath(f"dataset_{AUDIO_NAME}.zip")
+                    file_path = Path(root) / file
+                    # Define the archive path (relative path inside the ZIP, including the 'dataset/' prefix)
+                    archive_path = Path("dataset") / file_path.relative_to(
+                        base_path.parent
+                    )
+                    # Add the file to the ZIP file
+                    zipf.write(file_path, archive_path.as_posix())
+                    print(f"Added {file_path} as {archive_path}")
+
+        return CogPath(output_zip_path)
