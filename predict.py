@@ -252,10 +252,15 @@ class Predictor(BasePredictor):
         # Separate Vocal and Instrument/Noise using Demucs
         AUDIO_INPUT = f"youtubeaudio/{AUDIO_NAME}.wav"
         command = f"demucs --two-stems=vocals {AUDIO_INPUT}"
-        result = subprocess.run(command.split(), stdout=subprocess.PIPE)
-        print(result.stdout.decode())
+        print(f"Running: {command}")
+        process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+        output, _ = process.communicate()
+        print(output.decode())
 
         os.makedirs(f"dataset/{AUDIO_NAME}", exist_ok=True)
+
+        # if not os.path.exists(f"separated/htdemucs/{AUDIO_NAME}/vocals.wav"):
+        #     raise Exception("File not found")
 
         audio, sr = librosa.load(
             f"separated/htdemucs/{AUDIO_NAME}/vocals.wav", sr=None, mono=False
@@ -276,21 +281,42 @@ class Predictor(BasePredictor):
                 f"dataset/{AUDIO_NAME}/split_{i}.wav", chunk, sr
             )  # Save sliced audio files with soundfile.
 
-        # Correct the output ZIP file path
+        # Define the base path for the dataset and the specific audio folder
+        base_dataset_path = Path("dataset")
+        audio_folder_path = base_dataset_path / AUDIO_NAME
+
+        # Output ZIP file path
         output_zip_path = f"dataset_{AUDIO_NAME}.zip"
 
-        # Zip the contents of the directory and return the CogPath of the zip file
-        with zipfile.ZipFile(output_zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-            base_path = Path(f"dataset/{AUDIO_NAME}")
-            for root, dirs, files in os.walk(base_path):
-                for file in files:
-                    file_path = Path(root) / file
-                    # Define the archive path (relative path inside the ZIP, including the 'dataset/' prefix)
-                    archive_path = Path("dataset") / file_path.relative_to(
-                        base_path.parent
-                    )
-                    # Add the file to the ZIP file
-                    zipf.write(file_path, archive_path.as_posix())
-                    print(f"Added {file_path} as {archive_path}")
+        # Make sure the audio folder exists
+        if not audio_folder_path.exists():
+            print(f"Audio folder {audio_folder_path} does not exist.")
+            # Handle the error or exit
+            # return or exit
 
+        # Create a zip command to zip the 'dataset' directory
+        zip_command = [
+            "zip",
+            "-r",
+            output_zip_path,
+            audio_folder_path.as_posix(),
+            "-i",
+            f"{audio_folder_path.as_posix()}/*",
+        ]
+
+        # Execute the zip command
+        with subprocess.Popen(
+            zip_command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=base_dataset_path.parent,
+        ) as proc:
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                print(f"Error in zipping: {stderr.decode()}")
+            else:
+                print(f"Output: {stdout.decode()}")
+
+        # Assuming CogPath is a valid class or function that takes the path of the zip file
+        print(output_zip_path)
         return CogPath(output_zip_path)

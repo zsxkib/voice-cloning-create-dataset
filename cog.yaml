@@ -9,6 +9,7 @@ build:
   system_packages:
     - "aria2"
     - "libgl1-mesa-glx"
+    - "zip"
   #   - "libglib2.0-0"
 
   # python version in the form '3.11' or '3.11.4'
@@ -21,7 +22,7 @@ build:
     - "torchaudio"
     - "yt-dlp==2023.7.6"
     - "ffmpeg==1.4"
-    - "demucs==4.0.1"
+    - "demucs>=4.0.1"
     - "numpy==1.23.5"
     - "librosa==0.9.1"
     - "soundfile==0.12.1"
@@ -78,6 +79,7 @@ build:
     - pip install --upgrade pip
     - apt-get update && apt-get install -y ffmpeg
     - pip install imageio[ffmpeg]
+    - pip install demucs
 
 # predict.py defines how predictions are run on your model
 predict: "predict.py:Predictor"
