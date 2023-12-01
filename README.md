@@ -1,5 +1,7 @@
 # RVC v2 Dataset Creation Tool
 
+[![Replicate](https://replicate.com/zsxkib/create-rvc-dataset/badge)](https://replicate.com/zsxkib/create-rvc-dataset)
+
 ## Introduction
 Create vocal datasets for Realistic Voice Cloning (RVC) v2 models with ease. Simply provide a YouTube video URL and let the tool handle the extraction and preparation of vocal data, ideal for training sophisticated voice cloning models. 🧠🎤
 
