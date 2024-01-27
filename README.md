@@ -21,7 +21,7 @@ Create vocal datasets for Realistic Voice Cloning (RVC) v2 models with ease. Sim
 - It houses `split_<i>.mp3` files, each containing a clear vocal extract. 🎶
 
 ## Training Your Model
-Once you have your dataset, head over to `https://replicate.com/zsxkib/train-rvc-v2` to train your RVC v2 model on your newly created dataset. 🚀
+Once you have your dataset, head over to `https://replicate.com/replicate/train-rvc-model` to train your RVC model on your newly created dataset. 🚀
 
 ## Acknowledgments
 This tool is adapted from work by the talented [ardha27](https://github.com/ardha27/AI-Song-Cover-RVC), who authored the initial codebase available [here](https://colab.research.google.com/github/ardha27/AI-Song-Cover-RVC/blob/main/Download_Youtube_WAV_and_Splitting_Audio.ipynb). 🙏
